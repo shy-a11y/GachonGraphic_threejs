@@ -1,0 +1,11 @@
+[Three.js 기술 문서 링크 - https://threejs.org/docs/index.html#manual/en/introduction/Creating-a-scene]
+
+PART1은 three.js 맛보기 파트입니다.
+
+S01 E04 - Three.js를 통해서 어떻게 그래픽스를 구현하는가를 코드를 살펴보면 되는 파트입니다.
+	 코드에 적힌 함수를 기술 문서에서 검색해서 찾아보면 좋습니다.
+
+S01 E06 - 'ㅁ' 모양을 만드는 것이 과제입니다. 같은 모양의 타일 여러 개를 활용하여 만드시면 됩니다.
+             BoxGeometry 및 MeshPhongMaterial을 참고하시면 좋습니다.
+	 [https://threejs.org/docs/index.html?q=box#api/en/geometries/BoxGeometry]
+	 [https://threejs.org/docs/index.html?q=mesh#api/en/materials/MeshPhongMaterial]
