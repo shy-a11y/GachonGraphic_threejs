@@ -1,0 +1,14 @@
+[Three.js 기술 문서 링크 - https://threejs.org/docs/index.html#manual/en/introduction/Creating-a-scene]
+
+PART 8은 공의 물리적인 움직임을 구현해보는 것을 목표로 합니다.
+
+S08 E01 - 공이 벽에 부딪히면 반발력이 생기는 것처럼 만들어 봅시다.
+
+S08 E02 - 2차원에서 공이 굴러가고 튕기는 것처럼 만들어 봅시다.
+
+S08 E03 - 3차원에서 공이 바운스되는 것을 만들어 봅니다.
+
+S08 E04 - 공이 지표면에 맞닿는 순간, 탱탱볼처럼 scale이 변하게끔 수정합니다.
+
+S08 E05 - Half pipeline의 표면을 따라 움직이도록 구현합니다. CSG 필요.
+
