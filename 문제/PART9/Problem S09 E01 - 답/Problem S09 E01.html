@@ -1,0 +1,81 @@
+﻿<html>
+	<head>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="three.min.js"></script>
+		<script>
+			
+			
+	
+			var renderer = new THREE.WebGLRenderer( {antialias: true} );
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setAnimationLoop( drawFrame );
+			document.body.appendChild( renderer.domElement );
+
+			var scene = new THREE.Scene();
+			scene.background = new THREE.Color( 'gray' );
+
+			
+			var aspect = window.innerWidth/window.innerHeight;
+			var camera = new THREE.PerspectiveCamera( 30, aspect );
+			camera.position.set( 0, 0, 30 );
+			
+			
+			var brick = new THREE.Mesh(
+				new THREE.BoxGeometry( 10, 10, 10 ),
+				new THREE.MeshPhongMaterial( {color: 'orange', shininess: 100} )
+			);
+			scene.add( brick );
+
+		
+			var bump = new THREE.Mesh(
+				new THREE.BoxGeometry( 4, 12, 3 ),
+				new THREE.MeshPhongMaterial( {color: 'white', shininess: 100} )
+			);
+			bump.position.x = 4;
+			scene.add( bump );
+			
+		
+			var bump = new THREE.Mesh(
+				new THREE.BoxGeometry( 4, 12, 3 ),
+				new THREE.MeshPhongMaterial( {color: 'green', shininess: 100} )
+			);
+			bump.position.x = -4;
+			scene.add( bump );
+
+		
+			
+			var light = new THREE.PointLight();
+			light.position.set( 0, 0, 10 );
+			scene.add( light );
+
+			light = new THREE.PointLight();
+			light.position.set( -10, 0, 0 );
+			scene.add( light );
+
+			light = new THREE.PointLight();
+			light.position.set( 10, 0, 0 );
+			scene.add( light );
+
+			
+			var clock = new THREE.Clock();
+
+			function drawFrame()
+			{
+				var t = clock.getElapsedTime();
+
+				var angle = Math.PI / 2 * Math.sin(t/2);
+
+				camera.position.set(30*Math.sin(angle),0,30*Math.cos(angle));
+
+				camera.lookAt(brick.position);
+				
+				renderer.render( scene, camera );
+			}
+		</script>
+	</body>
+</html>

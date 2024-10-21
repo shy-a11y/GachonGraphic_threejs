@@ -1,0 +1,87 @@
+﻿<html>
+	<head>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="three.min.js"></script>
+		<script>
+			
+	
+			var renderer = new THREE.WebGLRenderer({antialias:true});
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setAnimationLoop( drawFrame );
+			document.body.appendChild( renderer.domElement );
+
+		
+			var scene = new THREE.Scene();
+			scene.background = new THREE.Color( 'gray' );
+
+			var aspect = window.innerWidth/window.innerHeight;
+			var camera = new THREE.PerspectiveCamera( 30, aspect );
+			camera.position.set( 0, 0, 150 );
+			camera.lookAt( new THREE.Vector3( 0, 10, 0 ) );
+
+			
+			
+			var box = new THREE.Mesh( new THREE.BoxGeometry( 100, 100, 100 ) );
+			scene.add( new THREE.BoxHelper( box, 'black' ) );
+			
+			
+		
+			var ya = new THREE.Group();
+			ya.position.set( 50-100*Math.random(), 50-100*Math.random(), 50-100*Math.random() );
+			ya.rotation.set( 2*Math.PI*Math.random(), 2*Math.PI*Math.random(), 2*Math.PI*Math.random() );
+			ya.updateMatrixWorld();
+			scene.add( ya );
+			
+			
+			var platform = new THREE.Mesh(
+				new THREE.BoxGeometry( 1, 20, 20 ),
+				new THREE.MeshBasicMaterial({
+					color: 'white',
+					map: new THREE.TextureLoader().load('star.png')
+			);
+			ya.add( platform );
+
+			
+			var frame = new THREE.Mesh(
+				new THREE.BoxGeometry( 2, 22, 22 ),
+				new THREE.MeshPhongMaterial( {color: 'coral'} )
+			);
+			frame.position.x = -1;
+			ya.add( frame );
+			
+			
+			
+			scene.add( new THREE.ArrowHelper( ya.localToWorld(new THREE.Vector3(1,0,0)).sub(ya.position), ya.position, 10, 'blue', 5, 3 ) );
+			scene.add( new THREE.ArrowHelper( ya.localToWorld(new THREE.Vector3(0,1,0)).sub(ya.position), ya.position, 20, 'blue', 5, 3 ) );
+			scene.add( new THREE.ArrowHelper( ya.localToWorld(new THREE.Vector3(0,0,1)).sub(ya.position), ya.position, 20, 'blue', 5, 3 ) );
+
+			
+		
+			light = new THREE.PointLight( 'white', 1 );
+			light.position.set( 0, 100, 0 );
+			scene.add( light );
+			
+			light = new THREE.PointLight( 'white', 1 );
+			light.position.set( 0, -100, 0 );
+			scene.add( light );
+
+			
+			var clock = new THREE.Clock();
+			
+			function drawFrame()
+			{
+				
+				var t = clock.getElapsedTime();
+				camera.position.set( 300*Math.cos(t/2), 0, 300*Math.sin(t/2) );
+				camera.lookAt(scene.position);
+				
+				renderer.render( scene, camera );
+			}
+		</script>
+	</body>
+</html>
