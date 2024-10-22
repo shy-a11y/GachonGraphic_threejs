@@ -1,0 +1,75 @@
+﻿<html>
+	<head>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="three.min.js"></script>
+		<script src="dat.gui.min.js"></script> 
+		<script>
+			
+			
+	
+			var renderer = new THREE.WebGLRenderer( {antialias: true} );
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setAnimationLoop( drawFrame );
+			document.body.appendChild( renderer.domElement );
+
+			var scene = new THREE.Scene();
+
+			var aspect = window.innerWidth/window.innerHeight;
+			var camera = new THREE.PerspectiveCamera( 30, aspect );
+			camera.position.set( 0, 0, 20 );
+
+	
+			
+			var cube = new THREE.Mesh( 
+				new THREE.BoxGeometry( 1, 1, 1 ),
+				new THREE.MeshPhongMaterial( {color: 'gold', shininess: 100} )
+			);
+			scene.add( cube );
+		
+			
+			var light = new THREE.PointLight();
+			light.position.set( 0, 0, 10 );
+			scene.add( light );
+
+			light = new THREE.PointLight();
+			light.position.set( -10, 0, 0 );
+			scene.add( light );
+
+			light = new THREE.PointLight();
+			light.position.set( 10, 0, 0 );
+			scene.add( light );
+
+		
+
+			
+			var params = {size: 1};
+			
+			
+			var gui = new dat.GUI();
+			
+			
+			gui.add( params, 'size', 0.2, 10 ).name( 'Size' );
+			
+
+			function drawFrame()
+			{
+				
+				cube.scale.x = params.size;
+				cube.scale.y = params.size;
+				cube.scale.z = params.size;
+				
+				
+				cube.rotation.x += 0.005;
+				cube.rotation.y += 0.004;
+				cube.rotation.z += 0.006;
+				
+				renderer.render( scene, camera );
+			}
+		</script>
+	</body>
+</html>

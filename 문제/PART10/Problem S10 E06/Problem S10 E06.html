@@ -1,0 +1,75 @@
+﻿<html>
+	<head>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="three.min.js"></script>
+		<script src="labyrinth.js"></script>
+		<script>
+			
+			
+	
+			var renderer = new THREE.WebGLRenderer({antialias:true});
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setAnimationLoop( drawFrame );
+			document.body.appendChild( renderer.domElement );
+			
+			var scene = new THREE.Scene();
+
+			var aspect = window.innerWidth/window.innerHeight;
+			var camera = new THREE.PerspectiveCamera( 30, aspect );
+			camera.position.set( 30, 15, 30 );
+			camera.lookAt( scene.position );
+	
+			
+			
+			generateLabyrinth();
+			
+		
+			var block = new THREE.BoxGeometry( 1, 0.2, 1 ); 
+			var labyrinth = new THREE.Group(); 
+			var material = new THREE.MeshPhongMaterial( {color: 'peachpuff', shininess: 10} );
+
+			for( var x=0; x<2*dW+1; x++ )
+			for( var y=0; y<2*dH+2; y++ )
+				if( isWall(x,y) )
+				{
+					
+					var wall = new THREE.Mesh( block, material );
+					wall.position.set( x, 0, y );
+					labyrinth.add( wall );
+				}
+			scene.add( labyrinth );
+		
+		
+			var light = new THREE.PointLight( 'peachpuff', 1/2 );
+			light.position.set( -dW, 10, -dH );
+			scene.add( light );
+			
+			light = new THREE.PointLight( 'peachpuff', 1/2 );
+			light.position.set( dW, 10, -dH );
+			scene.add( light );
+			
+			light = new THREE.PointLight( 'peachpuff', 1/2 );
+			light.position.set( dW, 10, dH );
+			scene.add( light );
+			
+			light = new THREE.PointLight( 'peachpuff', 1/2 );
+			light.position.set( -dW, 10, dH );
+			scene.add( light );
+
+		
+			labyrinth.position.set( -dW+1, 0, -dH-1 );
+			
+			function drawFrame()
+			{
+				scene.rotation.y += 0.002;
+				
+				renderer.render( scene, camera );
+			}
+		</script>
+	</body>
+</html>

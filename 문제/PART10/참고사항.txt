@@ -1,0 +1,16 @@
+[Three.js 기술 문서 링크 - https://threejs.org/docs/index.html#manual/en/introduction/Creating-a-scene]
+
+PART 10은 gui를 통한 디버깅, orbitcontrol을 통한 카메라 관리, labyrinth를 통한 미로 만들기를 배웁니다.
+
+S09 E01 - gui를 통해서 물체의 크기, 회전속도 조절해보기
+
+S09 E02 - gui를 통해서 폴더 생성해보고 물체의 x, y, z 크기를 조절하기
+
+S09 E03 - gui를 통해서 색 조절
+
+S09 E04 - orbitcontrol을 통해서 카메라 쉽게 조작하기
+
+S09 E05 - 2D 미로
+
+S09 E06 - 3D 미로
+
