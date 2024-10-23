@@ -1,0 +1,68 @@
+﻿<html>
+	<head>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="three.min.js"></script>
+		<script src="VideoTexture.js"></script>
+		<video id="video" autoplay muted loop playsinline style="display: none;">
+			<source src="tv.mp4" type="video/mp4">
+		</video>
+
+		<button style="margin:1em; position: fixed; z-index: 1000;" onclick="video.play()">Play</button>
+		<script>
+
+			
+	
+			var renderer = new THREE.WebGLRenderer( {antialias: true} );
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setAnimationLoop( drawFrame );
+			document.body.appendChild( renderer.domElement );
+			
+			var scene = new THREE.Scene();
+			scene.background = new THREE.Color( 'antiquewhite' );
+
+			var aspect = window.innerWidth/window.innerHeight;
+			var camera = new THREE.PerspectiveCamera( 30, aspect );
+			camera.position.set( 0, 0, 25 );
+		
+			video = document.getElementById('video');
+			texture = new VideoTexture(video);
+			texture.minFilter = THREE.LinearFilter;
+			texture.magFilter = THREE.LinearFilter;
+			texture.format = THREE.RGBFormat;
+
+			var cube = new THREE.Mesh(
+				new THREE.BoxGeometry( 6, 6, 6 ),
+				new THREE.MeshBasicMaterial({map: texture})
+			);
+			scene.add(cube);
+			
+			
+			for( var x=-3; x<4; x+=6 )
+			for( var y=-3; y<4; y+=6 )
+			for( var z=-3; z<4; z+=6 )
+			{
+				var cube = new THREE.Mesh(
+					new THREE.BoxGeometry( 2, 2, 2 ),
+					new THREE.MeshBasicMaterial({map: texture})
+				);
+				cube.position.set( x, y, z );
+				scene.add( cube );
+			}
+			
+			
+			function drawFrame()
+			{
+				scene.rotation.x += 0.005;
+				scene.rotation.y += 0.004;
+				scene.rotation.z += 0.003;
+				
+				renderer.render( scene, camera );
+			}
+		</script>
+	</body>
+</html>

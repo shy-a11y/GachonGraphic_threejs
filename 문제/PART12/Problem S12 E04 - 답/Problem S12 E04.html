@@ -1,0 +1,101 @@
+﻿<html>
+	<head>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="three.min.js"></script>
+		<script src="OBJLoader.js"></script>
+		<script>
+			
+			var renderer = new THREE.WebGLRenderer( {antialias: true} );
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setAnimationLoop( drawFrame );
+			document.body.appendChild( renderer.domElement );
+
+			var scene = new THREE.Scene();
+			scene.background = new THREE.Color(0x000040);
+
+			var aspect = window.innerWidth/window.innerHeight;
+			var camera = new THREE.PerspectiveCamera( 30, aspect );
+			camera.position.set( 0, 0, 25 );
+			
+			var stars = new THREE.TextureLoader().load('NASA/yale8.jpg');
+			stars.repeat = new THREE.Vector2(3,3);
+			stars.offset = new THREE.Vector2(0,0);
+			stars.wrapS = THREE.RepeatWrapping;
+			stars.wrapT = THREE.RepeatWrapping;
+
+			var cosmos = new THREE.Mesh(
+				new THREE.SphereGeometry(30, 32, 32),
+				new THREE.MeshPhongMaterial({map: stars, side: THREE.DoubleSide})
+			);
+
+			scene.add(cosmos);
+			
+			
+			var texture = new THREE.TextureLoader().load('NASA/z2_Color_s.jpg');
+			var bump = new THREE.TextureLoader().load('NASA/z2_Bump_s.jpg');
+
+			var astonaut;
+			var loader = new THREE.OBJLoader();
+			loader.load(
+				"NASA/Z2.obj",
+				function(object) {
+					astonaut = object;
+
+					var material = new THREE.MeshPhongMaterial({
+						shininess: 80,
+						map:texture,
+						bumpMap:bump,
+						bumpScale: 0.02
+					});
+
+					astonaut.traverse(function(child) {
+					child.material = material;
+					});
+
+					astonaut.position.y = -1;
+
+					scene.add(astonaut);
+				}
+			);
+			
+
+			var lightr = new THREE.PointLight('white', 1/2);
+			lightr.position.set( 120, -20, 0 );
+			scene.add( lightr );
+
+			var light = new THREE.PointLight('white', 1/2);
+			light.position.set( -120, -20, 0 );
+			scene.add( light );
+
+			var light = new THREE.PointLight('white', 1/2);
+			light.position.set( 0, 120, 0 );
+			scene.add( light );
+			scene.add(new THREE.AmbientLight('gray'));
+		
+			var t=0;
+			function drawFrame()
+			{
+				t++;
+				if (astonaut) {
+					astonaut.rotation.x = 0.1 * Math.sin(t/70) - 0.1*Math.cos(t/80);
+					astonaut.rotation.y = t / 151;
+					astonaut.rotation.z = 0.1 * Math.sin(t/90) - 0.1*Math.cos(t/60);
+				}
+
+				var s = Math.pow(Math.sin(t/300), 2);
+				camera.position.set(0, 0.4-0.4*s, 2+3*s);
+
+				cosmos.rotation.y = -t / 3500;
+
+				lightr.color.set((t%30 < 10) ? 'white' : 'red');
+				
+				renderer.render( scene, camera );
+			}
+		</script>
+	</body>
+</html>

@@ -1,0 +1,50 @@
+﻿<html>
+	<head>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="three.min.js"></script>
+		
+		<script>
+			
+			var renderer = new THREE.WebGLRenderer( {antialias: true} );
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setAnimationLoop( drawFrame );
+			document.body.appendChild( renderer.domElement );
+
+			var scene = new THREE.Scene();
+			scene.background = new THREE.Color(0x000040);
+
+			var aspect = window.innerWidth/window.innerHeight;
+			var camera = new THREE.PerspectiveCamera( 30, aspect );
+			camera.position.set( 0, 0, 25 );
+			
+			
+			
+			var cube = new THREE.Mesh( 
+				new THREE.BoxGeometry( 1, 1, 1 ),
+				new THREE.MeshPhongMaterial()
+			);
+			scene.add( cube );
+
+
+			
+			var light = new THREE.PointLight();
+			light.position.set( 0, 5, 10 );
+			scene.add( light );
+
+		
+			function drawFrame()
+			{
+				cube.rotation.x += 0.003;
+				cube.rotation.y += 0.004;
+				cube.rotation.z += 0.005;
+				
+				renderer.render( scene, camera );
+			}
+		</script>
+	</body>
+</html>
