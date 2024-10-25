@@ -12,6 +12,7 @@
 		<script src="solluna.js"></script>
 		<script>
 			const width = 700; const length = 700;
+			var SKY;
 
 			var renderer = new THREE.WebGLRenderer({antialias:true});
 			renderer.setSize( window.innerWidth, window.innerHeight );
@@ -24,7 +25,7 @@
 
 			var aspect = window.innerWidth/window.innerHeight;
 			var camera = new THREE.PerspectiveCamera( 100, aspect );
-			camera.position.set( 450, 950, 900 );
+			camera.position.set( 450, 750, 600 );
 
 			var controls = new THREE.OrbitControls(camera, renderer.domElement);
 			controls.enableDamping = true;
@@ -40,11 +41,13 @@
 			scene.add( base );
 			
 			createMountain();
+			createSky();
 			createSolluna();
 			
 
 			function drawFrame()
 			{
+				SKY.rotation.x += 0.001;
 				controls.update();
 		
 				renderer.render( scene, camera );
@@ -90,6 +93,22 @@
 				scene.add(moon);
 
 				directionalLight.castShadow = true;
+			}
+			
+			function createSky()
+			{
+				var sky = new THREE.TextureLoader().load('Resources/sky/yale8.jpg');
+				sky.repeat = new THREE.Vector2(3,3);
+				sky.offset = new THREE.Vector2(0,0);
+				sky.wrapS = THREE.RepeatWrapping;
+				sky.wrapT = THREE.RepeatWrapping;
+
+				SKY = new THREE.Mesh(
+					new THREE.SphereGeometry(1200, 64, 64),
+					new THREE.MeshPhongMaterial({map: sky, side: THREE.DoubleSide})
+				);
+
+				scene.add(SKY);
 			}
 		</script>
 	</body>
