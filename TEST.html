@@ -9,6 +9,7 @@
 		<script src="three.min.js"></script>
 		<script src="OrbitControls.js"></script>
 		<script src="mountain.js"></script>
+		<script src="solluna.js"></script>
 		<script>
 			const width = 700; const length = 700;
 
@@ -22,7 +23,7 @@
 			//scene.fog = new THREE.Fog( 0x101010, 10, 100 );
 
 			var aspect = window.innerWidth/window.innerHeight;
-			var camera = new THREE.PerspectiveCamera( 30, aspect );
+			var camera = new THREE.PerspectiveCamera( 100, aspect );
 			camera.position.set( 450, 950, 900 );
 
 			var controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -39,10 +40,7 @@
 			scene.add( base );
 			
 			createMountain();
-
-			
-			var light = new THREE.HemisphereLight( 'white', 'black' );
-			scene.add( light );
+			createSolluna();
 			
 
 			function drawFrame()
@@ -71,6 +69,27 @@
 				var mountain_4 = createMountainTerrain(width * 1.4, length / 5);
         		mountain_4.position.set(0, 0, - length / 2 - length / 10);
        			scene.add(mountain_4);
+			}
+
+			function createSolluna()
+			{
+				var directionalLight;
+
+				var sun = createRotatingSphere('sun', 100, 0, 900, 30);
+				directionalLight = new THREE.DirectionalLight(0xffaf00, 0.3);
+				sun.add(directionalLight);
+				directionalLight = new THREE.DirectionalLight(0xffffff, 1); 
+				sun.add(directionalLight);
+				scene.add(sun); 
+
+				moon = createRotatingSphere('moon', 100, 0, 900, 30);
+				directionalLight = new THREE.DirectionalLight(0x003f70, 0.3);
+				moon.add(directionalLight);
+				directionalLight = new THREE.DirectionalLight(0xffffff, 1); 
+				moon.add(directionalLight);
+				scene.add(moon);
+
+				directionalLight.castShadow = true;
 			}
 		</script>
 	</body>
