@@ -11,7 +11,7 @@
 		<script src="mountain.js"></script>
 		<script src="solluna.js"></script>
 		<script>
-			const width = 700; const length = 700;
+			const width = 400; const length = 400;
 			var SKY;
 
 			var renderer = new THREE.WebGLRenderer({antialias:true});
@@ -25,7 +25,7 @@
 
 			var aspect = window.innerWidth/window.innerHeight;
 			var camera = new THREE.PerspectiveCamera( 100, aspect );
-			camera.position.set( 450, 750, 600 );
+			camera.position.set( 150, 250, 200 );
 
 			var controls = new THREE.OrbitControls(camera, renderer.domElement);
 			controls.enableDamping = true;
@@ -33,9 +33,10 @@
 			controls.maxPolarAngle = Math.PI / 2;
 			controls.rotateSpeed = 0.2;
 			
+			var baseLoader = new THREE.TextureLoader().load('/Resources/snow/snow.jpg');
 			var base = new THREE.Mesh(
 				new THREE.PlaneGeometry( width, length ),
-				new THREE.MeshPhongMaterial( {color: 0x202030, shininess: 70} )
+				new THREE.MeshPhongMaterial( {map: baseLoader} )
 			);
 			base.lookAt( new THREE.Vector3( 0, 1, 0 ) );
 			scene.add( base );
@@ -104,7 +105,7 @@
 				sky.wrapT = THREE.RepeatWrapping;
 
 				SKY = new THREE.Mesh(
-					new THREE.SphereGeometry(1200, 64, 64),
+					new THREE.SphereGeometry(1000, 64, 64),
 					new THREE.MeshPhongMaterial({map: sky, side: THREE.DoubleSide})
 				);
 
