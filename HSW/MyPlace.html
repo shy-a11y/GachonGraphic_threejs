@@ -1,0 +1,124 @@
+﻿<html>
+	<head>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="three.min.js"></script>
+		<script src="PointerLockControls.js"></script>
+		<script src="labyrinth.js"></script>
+		<script>
+			var renderer = new THREE.WebGLRenderer({antialias:true});
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setAnimationLoop( drawFrame );
+			document.body.appendChild( renderer.domElement );
+			
+			var scene = new THREE.Scene();
+
+			var aspect = window.innerWidth / window.innerHeight;
+			var camera = new THREE.PerspectiveCamera( 75, aspect, 0.1, 1000 );
+			camera.position.set( 0, 1.6, 0 );
+			scene.add(camera);
+
+			var controls = new THREE.PointerLockControls( camera, document.body );
+			scene.add( controls.getObject() );
+
+			document.body.addEventListener('click', function () {
+				controls.lock();
+			});
+
+			// 바닥 생성
+			var plane = new THREE.Mesh(new THREE.BoxGeometry(1000, 0.1, 1000), new THREE.MeshPhongMaterial({color:'gray', shininess:5}));
+			plane.position.set(0,-0.4,0);
+			scene.add(plane);
+
+			// 미로 크기 설정
+			var dH = 15;  // 미로 높이
+			var dW = 28;  // 미로 너비
+
+			// 미로 생성
+			generateLabyrinth();
+
+			var block = new THREE.BoxGeometry( 1, 1, 1 ); 
+			var labyrinth = new THREE.Group(); 
+			var labyrinthMaterial = new THREE.MeshPhongMaterial( {color: 'darkgray', shininess: 10} );
+
+			for( var x=0; x<2*dW+1; x++ )
+			for( var y=0; y<2*dH+2; y++ )
+				if( isWall(x,y) ) {
+					var wall = new THREE.Mesh( block, labyrinthMaterial );
+					wall.scale.set(1, 1, 1);
+					wall.position.set(x, 0.5, y);
+					labyrinth.add( wall );
+				}
+			scene.add( labyrinth );
+
+			// 빛 추가
+			var light = new THREE.PointLight('white', 1);
+			light.position.set(0, 10, 0);
+			scene.add(light);
+
+			// 이동 변수 초기화
+			var moveForward = false;
+			var moveBackward = false;
+			var moveLeft = false;
+			var moveRight = false;
+
+			// 키 입력 감지
+			document.addEventListener('keydown', function (event) {
+				switch (event.code) {
+					case 'ArrowUp':
+					case 'KeyW':
+						moveForward = true;
+						break;
+					case 'ArrowDown':
+					case 'KeyS':
+						moveBackward = true;
+						break;
+					case 'ArrowLeft':
+					case 'KeyA':
+						moveRight = true;
+						break;
+					case 'ArrowRight':
+					case 'KeyD':
+						moveLeft = true;
+						break;
+				}
+			});
+
+			document.addEventListener('keyup', function (event) {
+				switch (event.code) {
+					case 'ArrowUp':
+					case 'KeyW':
+						moveForward = false;
+						break;
+					case 'ArrowDown':
+					case 'KeyS':
+						moveBackward = false;
+						break;
+					case 'ArrowLeft':
+					case 'KeyA':
+						moveRight = false;
+						break;
+					case 'ArrowRight':
+					case 'KeyD':
+						moveLeft = false;
+						break;
+				}
+			});
+
+			// 프레임마다 호출될 함수
+			function drawFrame() {
+				var delta = 0.1; 
+				if (moveForward) controls.moveForward(delta);
+				if (moveBackward) controls.moveForward(-delta);
+				if (moveLeft) controls.moveRight(-delta);
+				if (moveRight) controls.moveRight(delta);
+
+				renderer.render(scene, camera);
+			}
+		</script>
+	</body>
+</html>
