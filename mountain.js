@@ -41,9 +41,9 @@
 
         const r = 0.8 * (x2 - x1);
         const v = get(xm, ym);
-        v.x += r * (Math.random() - 0.5) / 8;
-        v.y += r * (Math.random() - 0.5) / 12;
-        v.z += r * (Math.random() + 2);
+        v.x += r * (Math.random() - 0.5) / 3;
+        v.y += r * (Math.random() - 0.5) / 2;
+        v.z += r * (Math.random() + 2) / 2;
         set(xm, ym, v);
 
         geoform(x1, y1, xm, ym);

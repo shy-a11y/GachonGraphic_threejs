@@ -10,6 +10,7 @@
 		<script src="OrbitControls.js"></script>
 		<script src="mountain.js"></script>
 		<script src="solluna.js"></script>
+		<script src="tree.js"></script>
 		<script>
 			const width = 400; const length = 400;
 			var SKY;
@@ -42,9 +43,9 @@
 			scene.add( base );
 			
 			createMountain();
+			createTree(20);
 			createSky();
 			createSolluna();
-			
 
 			function drawFrame()
 			{
@@ -60,19 +61,50 @@
 			{
 				var mountain_1 = createMountainTerrain(width / 5, length * 1.4);
         		mountain_1.position.set(width / 2 + width / 10, 0, 0);
+				mountain_1.receiveShadow = false;
+				mountain_1.castShadow = false; 
        			scene.add(mountain_1);
 
 				var mountain_2 = createMountainTerrain(width / 5, length * 1.4);
         		mountain_2.position.set(- width / 2 - width / 10, 0, 0);
+				mountain_2.receiveShadow = false;
+				mountain_2.castShadow = false; 
        			scene.add(mountain_2);
 
 				var mountain_3 = createMountainTerrain(width * 1.4, length / 5);
         		mountain_3.position.set(0, 0, length / 2 + length / 10);
+				mountain_3.receiveShadow = false;
+				mountain_3.castShadow = false; 
        			scene.add(mountain_3);
 
 				var mountain_4 = createMountainTerrain(width * 1.4, length / 5);
         		mountain_4.position.set(0, 0, - length / 2 - length / 10);
+				mountain_4.receiveShadow = false;
+				mountain_4.castShadow = false; 
        			scene.add(mountain_4);
+			}
+
+			function createTree(count) {
+				const xPositions = [160, 170, 180];
+				const zPositions = [];
+
+				for (let z = -190; z <= 190; z += 20) {
+					if (z < -50 || z > 50) {
+						zPositions.push(z);
+					}
+				}
+
+				for (let i = 0; i < count; i++) {
+					const x = xPositions[Math.floor(Math.random() * xPositions.length)];
+
+					const zIndex = i % zPositions.length;
+					const z = zPositions[zIndex];
+
+					const size = 0.7 + Math.random() * (1.2 - 0.7);
+					const tree = growTree(size);
+					tree.position.set(x, 0, z);
+					scene.add(tree);
+				}
 			}
 
 			function createSolluna()
