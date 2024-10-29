@@ -32,11 +32,15 @@ window.onload = function init() {
 
     scene.add(controls.getObject());
 
-    // 플레이어 움직임 처리
+    // 이동 처리 관련 변수들 let으로 수정
+    let moveForward = false;
+    let moveBackward = false;
+    let moveLeft = false;
+    let moveRight = false;
+    
     const velocity = new THREE.Vector3();
     const direction = new THREE.Vector3();
-    const moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
-    
+
     // 키보드 이벤트 처리
     const onKeyDown = function (event) {
         switch (event.code) {
@@ -46,7 +50,7 @@ window.onload = function init() {
                 break;
             case 'ArrowLeft':
             case 'KeyA':
-                moveLeft = true;
+                moveRight = true;
                 break;
             case 'ArrowDown':
             case 'KeyS':
@@ -54,7 +58,7 @@ window.onload = function init() {
                 break;
             case 'ArrowRight':
             case 'KeyD':
-                moveRight = true;
+                moveLeft = true;
                 break;
         }
     };
@@ -67,7 +71,7 @@ window.onload = function init() {
                 break;
             case 'ArrowLeft':
             case 'KeyA':
-                moveLeft = false;
+                moveRight = false;
                 break;
             case 'ArrowDown':
             case 'KeyS':
@@ -75,7 +79,7 @@ window.onload = function init() {
                 break;
             case 'ArrowRight':
             case 'KeyD':
-                moveRight = false;
+                moveLeft = false;
                 break;
         }
     };
@@ -97,18 +101,39 @@ window.onload = function init() {
 
     // GLTF 로드
     const loader = new THREE.GLTFLoader();
+    let dungeon;
+    let walls = []; // 충돌 감지를 위한 벽 리스트
+
     loader.load('models/scene.gltf', function (gltf) {
         dungeon = gltf.scene.children[0];
         dungeon.scale.set(20, 20, 20);
         dungeon.position.set(0, 0, 0); // 원점에 위치
         scene.add(gltf.scene);
+
+        // 충돌 감지용 벽 생성
+        dungeon.traverse(function (child) {
+            if (child.isMesh) {
+                const box = new THREE.Box3().setFromObject(child);
+                walls.push(box); // 각 벽의 Bounding Box를 리스트에 추가
+            }
+        });
     }, undefined, function (error) {
         console.error(error);
     });
 
-    // 충돌 처리 위한 Raycaster
-    const raycaster = new THREE.Raycaster();
-    const objects = [];
+    // 충돌 감지 함수
+    function detectCollision(position) {
+        const playerBox = new THREE.Box3().setFromCenterAndSize(
+            position, new THREE.Vector3(1, 1, 1) // 플레이어의 크기를 적절히 설정
+        );
+        
+        for (let i = 0; i < walls.length; i++) {
+            if (playerBox.intersectsBox(walls[i])) {
+                return true; // 충돌이 발생하면 true 반환
+            }
+        }
+        return false;
+    }
 
     function animate() {
         requestAnimationFrame(animate);
@@ -118,22 +143,25 @@ window.onload = function init() {
         direction.x = Number(moveRight) - Number(moveLeft);
         direction.normalize(); // 대각선 이동 시 속도 일정 유지
 
+        // velocity와 direction을 활용한 이동 처리
         if (moveForward || moveBackward) velocity.z -= direction.z * 0.1;
         if (moveLeft || moveRight) velocity.x -= direction.x * 0.1;
 
-        controls.moveRight(-velocity.x);
-        controls.moveForward(-velocity.z);
+        // 이전 카메라 위치 저장
+        const previousPosition = camera.position.clone();
 
-        // 충돌 감지 (Raycaster 사용)
-        raycaster.set(camera.position, new THREE.Vector3(0, -1, 0));
-        const intersects = raycaster.intersectObjects(objects);
+        // controls의 moveForward와 moveRight 함수로 이동 처리
+        controls.moveRight(-velocity.x); // x 축 이동
+        controls.moveForward(-velocity.z); // z 축 이동
 
-        if (intersects.length > 0) {
-            velocity.y = Math.max(0, velocity.y); // 충돌 시 중력 제거
+        // 충돌이 감지되면 이전 위치로 되돌림
+        if (detectCollision(camera.position)) {
+            camera.position.copy(previousPosition); // 이전 위치로 되돌림
         }
 
-        velocity.y -= 0.01; // 중력 추가
-        camera.position.y = Math.max(2, camera.position.y + velocity.y); // 바닥을 뚫지 않게 함
+        // velocity 감속 (마찰 효과를 위해)
+        velocity.x *= 0.9;
+        velocity.z *= 0.9;
 
         renderer.render(scene, camera);
     }
