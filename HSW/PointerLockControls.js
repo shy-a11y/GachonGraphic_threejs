@@ -1,66 +1,87 @@
 THREE.PointerLockControls = function (camera, domElement) {
-    var scope = this;
+    const scope = this;
 
-    // 카메라가 컨트롤의 대상
-    camera.rotation.set(0, 0, 0);
+    this.domElement = domElement || document.body;
+    this.isLocked = false;
 
-    var pitchObject = new THREE.Object3D();
-    pitchObject.add(camera);
+    // 시점 회전 속도 설정
+    const euler = new THREE.Euler(0, 0, 0, 'YXZ');
+    const PI_2 = Math.PI / 2;
 
-    var yawObject = new THREE.Object3D();
-    yawObject.position.y = 1.6;
-    yawObject.add(pitchObject);
-
-    var PI_2 = Math.PI / 2;
+    const sensitivity = 0.002; // 마우스 감도 조절
 
     function onMouseMove(event) {
-        if (scope.isLocked === false) return;
+        if (!scope.isLocked) return;
 
-        var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
-        var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+        const movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
+        const movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
 
-        yawObject.rotation.y -= movementX * 0.002;
-        pitchObject.rotation.x -= movementY * 0.002;
+        euler.setFromQuaternion(camera.quaternion);
 
-        pitchObject.rotation.x = Math.max(-PI_2, Math.min(PI_2, pitchObject.rotation.x));
+        euler.y -= movementX * sensitivity;
+        euler.x -= movementY * sensitivity;
+
+        euler.x = Math.max(-PI_2, Math.min(PI_2, euler.x)); // 위아래 각도 제한
+
+        camera.quaternion.setFromEuler(euler);
     }
 
     function onPointerlockChange() {
-        scope.isLocked = (document.pointerLockElement === domElement);
+        if (document.pointerLockElement === scope.domElement) {
+            scope.dispatchEvent({ type: 'lock' });
+            scope.isLocked = true;
+        } else {
+            scope.dispatchEvent({ type: 'unlock' });
+            scope.isLocked = false;
+        }
     }
 
     function onPointerlockError() {
         console.error('PointerLockControls: Unable to use Pointer Lock API');
     }
 
+    this.connect = function () {
+        document.addEventListener('mousemove', onMouseMove, false);
+        document.addEventListener('pointerlockchange', onPointerlockChange, false);
+        document.addEventListener('pointerlockerror', onPointerlockError, false);
+    };
+
+    this.disconnect = function () {
+        document.removeEventListener('mousemove', onMouseMove, false);
+        document.removeEventListener('pointerlockchange', onPointerlockChange, false);
+        document.removeEventListener('pointerlockerror', onPointerlockError, false);
+    };
+
+    this.dispose = function () {
+        this.disconnect();
+    };
+
+    this.getObject = function () {
+        return camera;
+    };
+
     this.lock = function () {
-        domElement.requestPointerLock();
+        this.domElement.requestPointerLock();
     };
 
     this.unlock = function () {
         document.exitPointerLock();
     };
 
-    document.addEventListener('mousemove', onMouseMove, false);
-    document.addEventListener('pointerlockchange', onPointerlockChange, false);
-    document.addEventListener('pointerlockerror', onPointerlockError, false);
-
-    this.getObject = function () {
-        return yawObject;
-    };
-
-    this.isLocked = false;
-
     this.moveForward = function (distance) {
-        var direction = new THREE.Vector3();
-        camera.getWorldDirection(direction); // 방향만 움직이도록 수정
-        yawObject.position.addScaledVector(direction, distance); // yawObject의 위치를 업데이트
+        const vector = new THREE.Vector3();
+        camera.getWorldDirection(vector);
+        camera.position.addScaledVector(vector, distance);
     };
 
     this.moveRight = function (distance) {
-        var direction = new THREE.Vector3();
-        camera.getWorldDirection(direction);
-        direction.crossVectors(camera.up, direction); // 오른쪽 방향으로 이동
-        yawObject.position.addScaledVector(direction, distance);
+        const vector = new THREE.Vector3();
+        camera.getWorldDirection(vector);
+        vector.crossVectors(camera.up, vector);
+        camera.position.addScaledVector(vector, distance);
     };
+
+    this.connect();
 };
+THREE.PointerLockControls.prototype = Object.create(THREE.EventDispatcher.prototype);
+THREE.PointerLockControls.prototype.constructor = THREE.PointerLockControls;
