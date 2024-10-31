@@ -38,6 +38,8 @@ window.onload = function init() {
     let moveBackward = false;
     let moveLeft = false;
     let moveRight = false;
+    // 멤버 각자 맵에 해당하는 번호 한승우: 1, 박영빈: 2, 임동현: 3, 장은성: 4
+    var indexNumber=1;
     
     const velocity = new THREE.Vector3();
     const direction = new THREE.Vector3();
@@ -61,6 +63,29 @@ window.onload = function init() {
             case 'KeyD':
                 moveLeft = true;
                 break;
+            //Q키를 누르면 다음 장소로 순간이동
+            case 'KeyQ':
+                indexNumber += 1;
+                if(indexNumber % 4 == 1){
+                    //한승우의 던전 좌표로 카메라가 이동
+                    camera.position.set(0, 10, 5);
+                }
+                if (indexNumber % 4 ==2){
+                    //박영빈의 던전좌표로 카메라가 이동
+                    camera.position.set(100, 100, 100);
+
+                }
+                if (indexNumber % 4 ==3){
+                    //임동현의 던전좌표로 카메라가 이동
+                    camera.position.set(200, 200, 200);
+
+                }
+                if (indexNumber % 4 == 0){
+                    //장은성의 던전좌표로 카메라가 이동
+                    camera.position.set(300, 300, 300);
+
+                }
+
         }
     };
 
@@ -82,6 +107,8 @@ window.onload = function init() {
             case 'KeyD':
                 moveLeft = false;
                 break;
+            
+
         }
     };
 
@@ -163,7 +190,8 @@ window.onload = function init() {
         // velocity 감속 (마찰 효과를 위해)
         velocity.x *= 0.9;
         velocity.z *= 0.9;
-
+        //카메라의 좌표를 log로 알려주는 코드
+        console.log(`Player Position: x=${camera.position.x.toFixed(0)}, y=${camera.position.y.toFixed(0)}, z=${camera.position.z.toFixed(0)}`);
         renderer.render(scene, camera);
     }
 
