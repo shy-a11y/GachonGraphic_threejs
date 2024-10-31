@@ -10,11 +10,12 @@ window.onload = function init() {
     scene.background = new THREE.Color(0x000000);
 
     const camera = new THREE.PerspectiveCamera(75, canvas.width / canvas.height, 0.1, 1000);
-    camera.position.set(0, 2, 5); // 카메라 초기 위치
+    // 카메라 초기 위치
+    camera.position.set(0, 10, 5);
 
     // PointerLockControls 추가
     const controls = new THREE.PointerLockControls(camera, renderer.domElement);
-    
+
     const instructions = document.getElementById("instructions");
     const startButton = document.getElementById("startButton");
 
