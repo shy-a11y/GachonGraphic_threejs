@@ -1,6 +1,9 @@
+const width = 300; const length = 300;
+const snowflakes = [];
+const snowflakeCount = 200;
+var SKY;
+
 window.onload = function init() {
-    const width = 300; const length = 300;
-	var SKY;
 
     const canvas = document.getElementById("gl-canvas");
     canvas.width = window.innerWidth;
@@ -150,6 +153,7 @@ window.onload = function init() {
     createMountain();
     createSky();
     createTree(15);
+    createSnows();
 
     // 충돌 감지 함수
     function detectCollision(position) {
@@ -191,6 +195,7 @@ window.onload = function init() {
 
 		SKY.rotation.x += 0.0001;
 		SKY.rotation.z += 0.0001;
+        animateSnows();
 
         // velocity 감속 (마찰 효과를 위해)
         velocity.x *= 0.9;
@@ -287,4 +292,38 @@ window.onload = function init() {
             scene.add(tree);
         }
     } 
-};
+
+    function createSnows() {
+        for (let i = 0; i < snowflakeCount; i++) {
+            snowflake = createKochSnowflake(3, 3); 
+            const randomX = Math.random() * 500 - 250; 
+            const randomZ = Math.random() * 500 - 250;
+            snowflake.position.set(randomX, Math.random() * 500 + 50, randomZ);
+            snowflakes.push(snowflake);
+            scene.add(snowflake);
+        }
+    }
+
+    function animateSnows() {
+        for (let i = 0; i < snowflakeCount; i++) {
+            snowflake = snowflakes[i];
+            
+            snowflake.position.y -= 0.5; 
+            
+            snowflake.position.x += 0.2;
+            snowflake.position.z += (Math.random() - 0.5) * 0.1;
+
+            snowflake.rotation.y += 0.02;
+            snowflake.rotation.z += 0.02;
+            snowflake.rotation.x += 0.02;
+    
+            if (snowflake.position.y < 0) {
+                snowflake.position.y = Math.random() * 100 + 50; 
+                snowflake.position.x = Math.random() * 800 - 200; 
+                snowflake.position.z = Math.random() * 400 - 100;
+            }
+        }
+    }
+    
+    
+}
