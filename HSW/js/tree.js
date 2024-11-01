@@ -1,11 +1,11 @@
 function growTree(size) {
     const wood = new THREE.MeshPhongMaterial({
-        map: new THREE.TextureLoader().load('Resources/tree/tree.jpg'),
+        map: new THREE.TextureLoader().load('../Resources/tree/tree.jpg'),
         shininess: 100
     });
 
     const leaf = new THREE.PointsMaterial({
-        map: new THREE.TextureLoader().load('Resources/tree/cherry_leaf.png'),
+        map: new THREE.TextureLoader().load('../Resources/tree/cherry_leaf.png'),
         transparent: true,
         opacity: 0.13,
         size: 2 

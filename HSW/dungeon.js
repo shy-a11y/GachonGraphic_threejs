@@ -1,4 +1,7 @@
 window.onload = function init() {
+    const width = 300; const length = 300;
+	var SKY;
+
     const canvas = document.getElementById("gl-canvas");
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -9,7 +12,7 @@ window.onload = function init() {
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x000000);
 
-    const camera = new THREE.PerspectiveCamera(75, canvas.width / canvas.height, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(100, canvas.width / canvas.height, 0.1, 3000);
     // 카메라 초기 위치
     camera.position.set(0, 10, 5);
 
@@ -115,15 +118,7 @@ window.onload = function init() {
     document.addEventListener('keydown', onKeyDown);
     document.addEventListener('keyup', onKeyUp);
 
-    // 빛 설정
-    const ambientLight = new THREE.AmbientLight(0x404040, 2);
-    scene.add(ambientLight);
-
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    directionalLight.position.set(100, 100, 100).normalize();
-    scene.add(directionalLight);
-
-    const pointLight = new THREE.PointLight(0xffffff, 2);
+    const pointLight = new THREE.PointLight(0xffffff, 0.9);
     pointLight.position.set(0, 200, 100);
     scene.add(pointLight);
 
@@ -148,6 +143,13 @@ window.onload = function init() {
     }, undefined, function (error) {
         console.error(error);
     });
+
+
+    // 배경 추가
+    createSolluna();
+    createMountain();
+    createSky();
+    createTree(15);
 
     // 충돌 감지 함수
     function detectCollision(position) {
@@ -187,6 +189,9 @@ window.onload = function init() {
             camera.position.copy(previousPosition); // 이전 위치로 되돌림
         }
 
+		SKY.rotation.x += 0.0001;
+		SKY.rotation.z += 0.0001;
+
         // velocity 감속 (마찰 효과를 위해)
         velocity.x *= 0.9;
         velocity.z *= 0.9;
@@ -196,4 +201,90 @@ window.onload = function init() {
     }
 
     animate();
+
+    function createSolluna()
+    {
+        var directionalLight;
+
+        var sun = createRotatingSphere('sun', 100, 0, 900, 30);
+        directionalLight = new THREE.DirectionalLight(0xffaf00, 0.3);
+        sun.add(directionalLight);
+        directionalLight = new THREE.DirectionalLight(0xffffff, 1); 
+        sun.add(directionalLight);
+        scene.add(sun); 
+
+        moon = createRotatingSphere('moon', 100, 0, 900, 30);
+        directionalLight = new THREE.DirectionalLight(0x003f70, 0.3);
+        moon.add(directionalLight);
+        directionalLight = new THREE.DirectionalLight(0xffffff, 1); 
+        moon.add(directionalLight);
+        scene.add(moon);
+
+        directionalLight.castShadow = true;
+    }
+
+    function createMountain() 
+    {
+        const yPos = -5;
+
+        var mountain_1 = createMountainTerrain(width, length * 1.8);
+        mountain_1.position.set(width + width / 3, yPos, width/2);
+        mountain_1.receiveShadow = false;
+        mountain_1.castShadow = false; 
+        scene.add(mountain_1);
+
+        var mountain_2 = createMountainTerrain(width, length * 1.8);
+        mountain_2.position.set(- width / 2 - width / 3, yPos, width/2);
+        mountain_2.receiveShadow = false;
+        mountain_2.castShadow = false; 
+        scene.add(mountain_2);
+
+        var mountain_3 = createMountainTerrain(width * 1.8, length);
+        mountain_3.position.set(width/4, yPos, length / 2 + length);
+        mountain_3.receiveShadow = false;
+        mountain_3.castShadow = false; 
+        scene.add(mountain_3);
+    }
+
+    function createSky()
+    {
+        var sky = new THREE.TextureLoader().load('../Resources/sky/yale8.jpg');
+        sky.repeat = new THREE.Vector2(3,3);
+        sky.offset = new THREE.Vector2(0,0);
+        sky.wrapS = THREE.RepeatWrapping;
+        sky.wrapT = THREE.RepeatWrapping;
+
+        SKY = new THREE.Mesh(
+            new THREE.SphereGeometry(1000, 64, 64),
+            new THREE.MeshPhongMaterial({map: sky, side: THREE.DoubleSide})
+        );
+
+        scene.add(SKY);
+    }
+
+    function createTree() {
+        for (let i = 0; i < 6; i++) {
+            const z = -30 + i * 60;
+            const size = 0.7 + Math.random() * (1.2 - 0.7);
+            const tree = growTree(size);
+            tree.position.set(-60, 0, z);
+            scene.add(tree);
+        }
+    
+        for (let i = 0; i < 6; i++) {
+            const z = -30 + i * 60; 
+            const size = 0.7 + Math.random() * (1.2 - 0.7);
+            const tree = growTree(size);
+            tree.position.set(220, 0, z);
+            scene.add(tree);
+        }
+    
+        for (let i = 0; i < 5; i++) {
+            const x = -30 + i * 50;
+            const size = 0.7 + Math.random() * (1.2 - 0.7);
+            const tree = growTree(size);
+            tree.position.set(x, 0, 270);
+            scene.add(tree);
+        }
+    } 
 };
