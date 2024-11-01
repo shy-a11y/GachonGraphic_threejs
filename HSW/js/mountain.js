@@ -56,12 +56,12 @@
     geometry.computeVertexNormals();
 
     const material = new THREE.MeshPhongMaterial({
-        map: new THREE.TextureLoader().load('/Resources/mountain_stone/blue-stone-texture.jpg'),
-        bumpMap: new THREE.TextureLoader().load('Resources/mountain_stone/NormalMap.png'),
+        map: new THREE.TextureLoader().load('../Resources/mountain_stone/blue-stone-texture.jpg'),
+        bumpMap: new THREE.TextureLoader().load('../Resources/mountain_stone/NormalMap.png'),
         bumpScale: 0.5,
-        displacementMap: new THREE.TextureLoader().load('Resources/mountain_stone/DisplacementMap.png'),
+        displacementMap: new THREE.TextureLoader().load('../Resources/mountain_stone/DisplacementMap.png'),
         displacementScale: 1 / 4,
-        aoMap: new THREE.TextureLoader().load('Resources/mountain_stone/AmbientOcclusionMap.png'),
+        aoMap: new THREE.TextureLoader().load('../Resources/mountain_stone/AmbientOcclusionMap.png'),
         aoMapIntensity: 1,
         shininess: 20,
         side: THREE.DoubleSide,
