@@ -8,9 +8,7 @@
 	<body>
 		<script src="three.min.js"></script>
 		<script src="labyrinth.js"></script>
-		<script src="GLTFLoader.js"></script>
 		<script src="OBJLoader.js"></script>
-		<script src="MTLLoader.js" type="module"></script>
 
 		<script>
 			var renderer = new THREE.WebGLRenderer({antialias:true});
@@ -96,33 +94,20 @@
 			scene.add(light.target);
 			scene.add(light);
 
-			var pointLight = new THREE.PointLight(0xffa500, 2, 10);  // 주황빛, 강도, 거리
-			pointLight.position.set(196, 0.5, 213.5);
+			var pointLight = new THREE.PointLight(0xffa500, 2, 4);  // 주황빛, 강도, 거리
+			pointLight.position.set(201.2, 0.5, 209.5);
 			pointLight.castShadow = true;
 			scene.add(pointLight);
 
-			var pointLight = new THREE.PointLight(0xffa500, 2, 10);  // 주황빛, 강도, 거리
-			pointLight.position.set(196, 0.5, 204.5);
-			pointLight.castShadow = true;
-			scene.add(pointLight);
-			
-			var pointLight = new THREE.PointLight(0xffa500, 2, 10);  // 주황빛, 강도, 거리
-			pointLight.position.set(204, 0.5, 204.5);
-			pointLight.castShadow = true;
-			scene.add(pointLight);
-
-			var pointLight = new THREE.PointLight(0xffa500, 2, 10);  // 주황빛, 강도, 거리
-			pointLight.position.set(204, 0.5, 213.5);
-			pointLight.castShadow = true;
-			scene.add(pointLight);
+	
 
 			//개인 공간 꾸미는 곳
-			const textureLoader = new THREE.TextureLoader();
-			const texture = textureLoader.load('model/sea/textures/material_4_baseColor.jpeg'); // 텍스처 파일 경로 지정
+			var textureLoader = new THREE.TextureLoader();
+			var texture;
 
 			// 구체 생성
-			const sphereGeometry = new THREE.SphereGeometry(20, 32, 32); // 구체의 반지름을 10으로 설정
-			const sphereMaterial = new THREE.MeshPhongMaterial({
+			var sphereGeometry = new THREE.SphereGeometry(20, 32, 32); // 구체의 반지름을 10으로 설정
+			var sphereMaterial = new THREE.MeshPhongMaterial({
     		map: texture,  // 텍스처를 구체 재질에 추가
 			side: THREE.BackSide
 			});
@@ -132,101 +117,170 @@
 			texturedSphere.position.set(202, 1, 208);  // 구체 위치 설정
 
 
+			var texture = new THREE.TextureLoader().load('model/wall.jpg');
 
-			var plane = new THREE.Mesh(new THREE.BoxGeometry(10, 0.1, 10), new THREE.MeshPhongMaterial({color:'gray'}));
+			texture.wrapS = THREE.RepeatWrapping;
+			texture.wrapT = THREE.RepeatWrapping;
+			texture.repeat.set(10, 10);
+
+			var texture3 = new THREE.TextureLoader().load('model/wall.jpg');
+
+			texture3.wrapS = THREE.RepeatWrapping;
+			texture3.wrapT = THREE.RepeatWrapping;
+			texture3.repeat.set(10, 10);
+
+
+			var plane = new THREE.Mesh(new THREE.BoxGeometry(10, 0.1, 10), new THREE.MeshPhongMaterial({map:texture3}));
 			plane.position.set(200.5,-0.4,209.5);
 			plane.castShadow = true;
 			plane.receiveShadow = true;
 			scene.add(plane);
 
-			var plane = new THREE.Mesh(new THREE.BoxGeometry(10, 1, 0.1), new THREE.MeshPhongMaterial({color:'gray'}));
+			texture.repeat.set(10, 1);
+
+			var plane = new THREE.Mesh(new THREE.BoxGeometry(10, 1, 0.1), new THREE.MeshPhongMaterial({map:texture}));
 			plane.position.set(200.5,-0.4,204.5);
 			plane.receiveShadow = true;
 			plane.castShadow = true;
 			scene.add(plane);
 
-			var plane = new THREE.Mesh(new THREE.BoxGeometry(10, 1, 0.1), new THREE.MeshPhongMaterial({color:'gray'}));
+			var plane = new THREE.Mesh(new THREE.BoxGeometry(10, 1, 0.1), new THREE.MeshPhongMaterial({map:texture}));
 			plane.position.set(200.5,-0.4,214.5);
 			plane.receiveShadow = true;
 			plane.castShadow = true;
 			scene.add(plane);
 
-			var plane = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1, 10), new THREE.MeshPhongMaterial({color:'gray'}));
+			var plane = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1, 10), new THREE.MeshPhongMaterial({map:texture}));
 			plane.position.set(205.5,-0.4,209.5);
 			plane.receiveShadow = true;
 			plane.castShadow = true;
 			scene.add(plane);
 
-			var plane = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1, 10), new THREE.MeshPhongMaterial({color:'gray'}));
+			var plane = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1, 10), new THREE.MeshPhongMaterial({map:texture}));
 			plane.position.set(195.5,-0.4,209.5);
 			plane.receiveShadow = true;
 			plane.castShadow = true;
 			scene.add(plane);
 
-			// GLTF 파일 로드
-			const loader = new THREE.GLTFLoader();
-			loader.load('model/jar/scene.gltf', function(gltf){
-	  		model = gltf.scene.children[0];
-			model.castShadow = true;        // 모델이 그림자를 투사하도록 설정
-			model.receiveShadow = true;  
-			model.scale.set(0.06,0.06,0.06);
+// 텍스처 로더 생성
+			const textureLoader2 = new THREE.TextureLoader();
+			const texture2 = textureLoader2.load('model/bg.jpg'); // 텍스처 파일 경로 지정
 
-			model.position.x = 205;
-			model.position.y = 0;
-			model.position.z = 214.5;
-	  		scene.add(gltf.scene);
-			}, undefined, function (error) {
-			console.error(error);
-			});
+// 큰 구체 생성 (배경용)
+const sphereGeometry2 = new THREE.SphereGeometry(20, 64, 64); // 큰 구체를 만들어 내부가 배경처럼 보이게 설정
+const sphereMaterial2 = new THREE.MeshBasicMaterial({
+    map: texture2,       // 텍스처를 재질에 추가
+    side: THREE.BackSide // 구체의 안쪽 면을 렌더링하도록 설정
+});
 
-
-			loader.load('model/jar/scene.gltf', function(gltf){
-	  		model = gltf.scene.children[0];
-			model.castShadow = true;        // 모델이 그림자를 투사하도록 설정
-			model.receiveShadow = true;  
-			model.scale.set(0.06,0.06,0.06);
-
-			model.position.x = 201.5;
-			model.position.y = -0.35;
-			model.position.z = 207;
-	  		scene.add(gltf.scene);
-			}, undefined, function (error) {
-			console.error(error);
-			});
-
-			//const mtlLoader = new THREE.MTLLoader();
-    		//mtlLoader.load('model/tree/Tree.mtl', function (materials) {
-        	//materials.preload(); // 재질을 미리 로드
+// 텍스처가 적용된 구체 메시 생성
+const backgroundSphere = new THREE.Mesh(sphereGeometry2, sphereMaterial2);
+backgroundSphere.position.set(200, 0, 200); // 구체를 씬의 중심에 위치시켜 전체를 감싸도록 설정
+scene.add(backgroundSphere);
 
 			var loaderObj = new THREE.OBJLoader();
-			//objLoader.setMaterials(materials); // OBJ 로더에 재질 설정
     		loaderObj.load(
         	'model/tree/Tree.obj', // OBJ 파일 경로
        		 function (object) {
-            //모델에 그림자를 투사하고 수신하도록 설정
             object.traverse(function (child) {
                 if (child.isMesh) {
                     child.castShadow = true;   // 그림자를 투사
                     child.receiveShadow = true; // 그림자를 수신
 
-					if (child.name === 'default1') {
-                const texture = textureLoader.load('model/tree/bark_0021.jpg', (texture) => {
-                    child.material.map = texture;
-                    child.material.needsUpdate = true;
-                });
-            }
-                }
-            });
-			
-			object.scale.set(0.65,0.65,0.65);
+					if (child.name === 'Tree_polySurface1 g1 polySurface1') {
+                	var barkTexture = textureLoader.load('model/tree/bark_0021.jpg');
+                	child.material = new THREE.MeshStandardMaterial({ map: barkTexture });
+                	child.material.needsUpdate = true;
 
-			object.position.x = 201.5;
+            		} else if (child.name === 'Tree_polySurface1 g1 g2 polySurface1') {
+                	var leafTexture = textureLoader.load('model/tree/DB2X2_L01.png');
+                	child.material = new THREE.MeshStandardMaterial({ map: leafTexture });
+                	child.material.needsUpdate = true;
+            }
+    			};
+            });
+
+			object.scale.set(0.65,0.65,0.65);
+			object.position.x = 202.5;
 			object.position.y = -0.35;
-			object.position.z = 207;
+			object.position.z = 210;
             scene.add(object); // 씬에 추가
 		});
-	//});
 			
+		loaderObj.load(
+        	'model/tree/Tree.obj', // OBJ 파일 경로
+       		 function (object) {
+            object.traverse(function (child) {
+                if (child.isMesh) {
+                    child.castShadow = true;   // 그림자를 투사
+                    child.receiveShadow = true; // 그림자를 수신
+
+					if (child.name === 'Tree_polySurface1 g1 polySurface1') {
+                	const barkTexture = textureLoader.load('model/tree/bark_0021.jpg');
+                	child.material = new THREE.MeshStandardMaterial({ map: barkTexture });
+                	child.material.needsUpdate = true;
+
+            		} else if (child.name === 'Tree_polySurface1 g1 g2 polySurface1') {
+                	const leafTexture = textureLoader.load('model/tree/DB2X2_L01.png');
+                	child.material = new THREE.MeshStandardMaterial({ map: leafTexture });
+                	child.material.needsUpdate = true;
+            }
+    			};
+            });
+
+			object.scale.set(0.65,0.65,0.65);
+			object.position.x = 200.5;
+			object.position.y = -0.35;
+			object.position.z = 210;
+            scene.add(object); // 씬에 추가
+		});
+
+
+		loaderObj.load(
+        	'model/fire/Campfire.obj', // OBJ 파일 경로
+       		 function (object) {
+            object.traverse(function (child) {
+                if (child.isMesh) {
+                    child.castShadow = true;   // 그림자를 투사
+                    child.receiveShadow = true; // 그림자를 수신
+
+					if (child.name === 'Campfire') {
+                	const CampfireTexture = textureLoader.load('model/fire/Textures/HD/Campfire_MAT_BaseColor_01.jpg');
+                	child.material = new THREE.MeshStandardMaterial({ map: CampfireTexture });
+                	child.material.needsUpdate = true;
+					}
+
+            }
+            });
+
+			object.scale.set(0.0065,0.0065,0.0065);
+			object.position.x = 201.2;
+			object.position.y = -0.34;
+			object.position.z = 209.5;
+            scene.add(object); // 씬에 추가
+		});
+
+
+		loaderObj.load(
+        	'model/fire/flame.obj', // OBJ 파일 경로
+       		 function (object) {
+            object.traverse(function (child) {
+                if (child.isMesh) {
+                    child.castShadow = true;   // 그림자를 투사
+                    child.receiveShadow = true; // 그림자를 수
+					
+					child.material.color.set(0xffa500);
+            }
+            });
+
+			object.scale.set(0.1,0.1,0.1);
+			object.position.x = 201.2;
+			object.position.y = -0.4;
+			object.position.z = 209.5;
+            scene.add(object); // 씬에 추가
+		});
+
+
 
 			function onKeyDown(event) {
 				if(event.code=="Space" || event.keyCode ==32) {jumpT = t;}
