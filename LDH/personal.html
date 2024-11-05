@@ -6,17 +6,24 @@
 		</style>
 	</head>
 	<body>
+	<div id="instructions">
+		<button id="startButton">Click to Play</button>
+	</div>
 		<script src="three.min.js"></script>
+		<script src ="PointerLockControls.js"></script>
 		<script src="labyrinth.js"></script>
 		<script src="OBJLoader.js"></script>
 
+
 		<script>
+		
 			var renderer = new THREE.WebGLRenderer({antialias:true});
 			renderer.setSize( window.innerWidth, window.innerHeight );
 			renderer.setAnimationLoop( drawFrame );
 			renderer.shadowMap.enabled = true;
 			renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 			document.body.appendChild( renderer.domElement );
+
 			
 			document.body.addEventListener('keydown', onKeyDown);
 			document.body.addEventListener('keyup', onKeyUp);
@@ -25,10 +32,10 @@
 
 			var aspect = window.innerWidth/window.innerHeight;
 			var camera = new THREE.PerspectiveCamera( 30, aspect );
-			camera.position.set( 30, 15, 30 );
+			camera.position.set( 1, 0, 2 );
 			camera.lookAt( scene.position );
 	
-			var plane = new THREE.Mesh(new THREE.BoxGeometry(20, 0.1, 20), new THREE.MeshPhongMaterial({color:'gray'}));
+			var plane = new THREE.Mesh(new THREE.BoxGeometry(20, 0.1, 21), new THREE.MeshPhongMaterial({color:'gray'}));
 			plane.position.set(0,-0.4,0);
 			scene.add(plane);
 			
@@ -99,7 +106,32 @@
 			pointLight.castShadow = true;
 			scene.add(pointLight);
 
-	
+
+			//시점
+			const controls = new THREE.PointerLockControls(camera, renderer.domElement);
+
+const instructions = document.getElementById("instructions");
+const startButton = document.getElementById("startButton");
+
+startButton.addEventListener('click', function () {
+	controls.lock();
+});
+
+controls.addEventListener('lock', function () {
+	instructions.style.display = 'none';
+});
+
+controls.addEventListener('unlock', function () {
+	instructions.style.display = 'block';
+});
+
+scene.add(controls.getObject());
+let moveForward = false;
+    let moveBackward = false;
+    let moveLeft = false;
+    let moveRight = false;
+	const velocity = new THREE.Vector3();
+    const direction = new THREE.Vector3();
 
 			//개인 공간 꾸미는 곳
 			var textureLoader = new THREE.TextureLoader();
@@ -161,6 +193,10 @@
 			plane.receiveShadow = true;
 			plane.castShadow = true;
 			scene.add(plane);
+
+			var pointLight = new THREE.PointLight(0xffffff, 1, 3); // 색상, 강도, 범위
+pointLight.position.copy(camera.position); // 처음에 카메라 위치와 동일하게 설정
+scene.add(pointLight);
 
 // 텍스처 로더 생성
 			const textureLoader2 = new THREE.TextureLoader();
@@ -279,24 +315,71 @@ scene.add(backgroundSphere);
 			object.position.z = 209.5;
             scene.add(object); // 씬에 추가
 		});
-
-
+		var height = 0;
+            var teleportCount = 0; // z 키 눌림 횟수를 기록할 변수 추가
 
 			function onKeyDown(event) {
-				if(event.code=="Space" || event.keyCode ==32) {jumpT = t;}
-				if(event.code=="ArrowLeft" || event.keyCode ==37) {turnLeft=true; turnRight=false;}
-				if(event.code=="ArrowRight" || event.keyCode ==39) {turnLeft=false; turnRight=true;}
-				if(event.code=="ArrowUp" || event.keyCode ==38) {goForward=true;}
+				switch (event.code) {
+            case 'ArrowUp':
+            case 'KeyW':
+				//pointLight.position.copy(camera.position); // 카메라 위치를 따라감
+                moveForward = true;
+                break;
+            case 'ArrowLeft':
+            case 'KeyA':
+                moveRight = true;
+                break;
+            case 'ArrowDown':
+            case 'KeyS':
+                moveBackward = true;
+                break;
+			case 'KeyQ':// startButton 자동으로 클릭
+				startButton.click();
+                break;
+            case 'ArrowRight':
+            case 'KeyD':
+                moveLeft = true;
+                break;
 
-				//임시로 z를 누르면 텔포
-				if(event.code=="KeyZ") {x = 200; z = 205.5; }
-			}		
+				// z 키를 누를 때마다 위치 변경 (짝수 번 누르면 원점으로 돌아감)
+				case "KeyZ":
+					teleportCount++;
+
+					if (teleportCount % 2 === 1) {
+						camera.position.set(200, 0 + height, 205.5);
+						// 홀수 번째 누름: 특정 위치로 텔레포트
+
+					} else {
+						// 짝수 번째 누름: 원점(시작점)으로 이동
+						camera.position.set(1, 0 + height, 2);
+					}
+					break;
+			   }
+			
+			}	
 			
 
 			function onKeyUp(event) {
-				if(event.code=="ArrowLeft" || event.keyCode ==37) {turnLeft=false;}
-				if(event.code=="ArrowRight" || event.keyCode ==39) {turnRight=false;}
-				if(event.code=="ArrowUp" || event.keyCode ==38) {goForward=false;}
+				switch (event.code) {
+            case 'ArrowUp':
+            case 'KeyW':
+                moveForward = false;
+                break;
+            case 'ArrowLeft':
+            case 'KeyA':
+                moveRight = false;
+                break;
+            case 'ArrowDown':
+            case 'KeyS':
+                moveBackward = false;
+                break;
+            case 'ArrowRight':
+            case 'KeyD':
+                moveLeft = false;
+                break;
+            
+
+        }
 			}
 
 			function canWalkTo(x,y) {
@@ -313,10 +396,42 @@ scene.add(backgroundSphere);
 
 			var t = 0;
 			var jumpT = -1000;
+
+			function animate() {requestAnimationFrame(animate);
+
+// 이동 처리
+direction.z = Number(moveForward) - Number(moveBackward);
+direction.x = Number(moveRight) - Number(moveLeft);
+direction.normalize(); // 대각선 이동 시 속도 일정 유지
+
+// velocity와 direction을 활용한 이동 처리
+if (moveForward || moveBackward) velocity.z -= direction.z * 0.01;
+if (moveLeft || moveRight) velocity.x -= direction.x * 0.01;
+
+// 이전 카메라 위치 저장
+const previousPosition = camera.position.clone();
+
+// controls의 moveForward와 moveRight 함수로 이동 처리
+controls.moveRight(-velocity.x); // x 축 이동
+controls.moveForward(-velocity.z); // z 축 이동
+
+
+// velocity 감속 (마찰 효과를 위해)
+velocity.x *= 0.9;
+velocity.z *= 0.9;
+//카메라의 좌표를 log로 알려주는 코드
+console.log(`Player Position: x=${camera.position.x.toFixed(0)}, y=${camera.position.y.toFixed(0)}, z=${camera.position.z.toFixed(0)}`);
+renderer.render(scene, camera);
+}
+
+animate();
+
+
+pointLight.position.copy(camera.position); // 카메라 위치를 따라감
 		
 			function drawFrame()
 			{
-
+				pointLight.position.copy(camera.position); // 카메라 위치를 따라감
 				if(turnLeft) {dir-=0.02;}
 				if(turnRight) {dir+=0.02;}
 				cos=Math.cos(dir);
@@ -333,6 +448,25 @@ scene.add(backgroundSphere);
 					}
 				}
 
+		    // RESTART
+			// goal detection and reset position to start (0,0)
+			var distanceToGoal = Math.sqrt(Math.pow(goal.position.x - x, 2) + Math.pow(goal.position.z - z, 2));
+			if (distanceToGoal < 0.5) {
+				x = 1; // 시작 지점 X 좌표
+				z = 2; // 시작 지점 Z 좌표
+				dir = 0;
+				goForward = false;
+				turnLeft = false;
+				turnRight = false;
+
+				var cos = Math.cos(dir);
+				var sin = Math.sin(dir);
+
+				// 카메라 위치 업데이트
+				// generateLabyrinth(); 호출 제거
+
+			}
+
 				t++;
 
 				light.position.set(x,0,z);
@@ -344,11 +478,11 @@ scene.add(backgroundSphere);
 				}
 
 
-        		camera.position.set(x - 0.1 * cos, 0 + height, z - 0.1 * sin);
-
-				camera.lookAt(new THREE.Vector3(x+10.4*cos, 0.95*height, z+10.4*sin));
+        
 
 				renderer.render( scene, camera );
+
+				
 			}
 		</script>
 	</body>
