@@ -91,7 +91,7 @@ window.onload = function init() {
                     camera.position.set(300, 300, 300);
 
                 }
-
+                break;
         }
     };
 
@@ -154,6 +154,7 @@ window.onload = function init() {
     createSky();
     createTree(15);
     createSnows();
+    createSlimes();
 
     // 충돌 감지 함수
     function detectCollision(position) {
@@ -325,5 +326,18 @@ window.onload = function init() {
         }
     }
     
+    function createSlimes() {
+        var slime1 = createSlime(5, 'happy');
+        slime1.position.set(50, 5, -70);
+        scene.add(slime1);
+
+        var slime2 = createSlime(5, 'sad');
+        slime2.position.set(50, 5, -60);
+        scene.add(slime2);
+
+        var slime3 = createSlime(5, 'angry');
+        slime3.position.set(40, 6, -60);
+        scene.add(slime3);
+    }
     
 }
