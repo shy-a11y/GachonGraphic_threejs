@@ -74,26 +74,7 @@ window.onload = function init() {
                 break;
             //Q키를 누르면 다음 장소로 순간이동
             case 'KeyQ':
-                indexNumber += 1;
-                if(indexNumber % 4 == 1){
-                    //한승우의 던전 좌표로 카메라가 이동
-                    camera.position.set(0, 10, 5);
-                }
-                if (indexNumber % 4 ==2){
-                    //박영빈의 던전좌표로 카메라가 이동
-                    camera.position.set(100, 100, 100);
-
-                }
-                if (indexNumber % 4 ==3){
-                    //임동현의 던전좌표로 카메라가 이동
-                    camera.position.set(200, 200, 200);
-
-                }
-                if (indexNumber % 4 == 0){
-                    //장은성의 던전좌표로 카메라가 이동
-                    camera.position.set(300, 300, 300);
-
-                }
+                window.location.href = "http://localhost:8000/LDH/personal.html"
                 break;
         }
     };
