@@ -1,6 +1,9 @@
 const width = 300; const length = 300;
 const snowflakes = [];
 const snowflakeCount = 200;
+const slimeSpeed = 0.05;
+const slimes = [];
+const slimeMovementTime = 1000;
 var SKY;
 
 window.onload = function init() {
@@ -325,19 +328,49 @@ window.onload = function init() {
             }
         }
     }
-    
+        
+
     function createSlimes() {
-        var slime1 = createSlime(5, 'happy');
-        slime1.position.set(50, 5, -70);
-        scene.add(slime1);
-
-        var slime2 = createSlime(5, 'sad');
-        slime2.position.set(50, 5, -60);
-        scene.add(slime2);
-
-        var slime3 = createSlime(5, 'angry');
-        slime3.position.set(40, 6, -60);
-        scene.add(slime3);
-    }
+        for (let i = 0; i < 10; i++) {
+            const size = Math.random() * 6 + 1;
+            const mode = ['happy', 'sad', 'angry'][Math.floor(Math.random() * 3)]; 
+            const slime = createSlime(size, mode); 
     
+            slime.position.set(Math.random() * 200 - 100, size / 2, Math.random() * 200 - 100);
+            scene.add(slime);
+            slimes.push(slime);
+    
+
+            setInterval(() => {
+                if (slime.userData.isMoving) {
+                    return; 
+                }
+    
+                slime.userData.isMoving = true; 
+    
+                const direction = new THREE.Vector3(Math.random() - 0.5, 0, Math.random() - 0.5).normalize();
+                const targetPosition = slime.position.clone().add(direction.multiplyScalar(slimeSpeed * 20)); 
+  
+                const startPosition = slime.position.clone();
+                const startTime = Date.now();
+    
+                const move = () => {
+                    const elapsedTime = Date.now() - startTime;
+                    const progress = Math.min(elapsedTime / slimeMovementTime, 1); 
+    
+                    slime.position.lerpVectors(startPosition, targetPosition, progress);
+
+                    slime.position.y = Math.sin(progress * Math.PI) * 2;
+    
+                    if (progress < 1) {
+                        requestAnimationFrame(move);
+                    } else {
+                        slime.userData.isMoving = false; 
+                    }
+                };
+    
+                requestAnimationFrame(move); 
+            }, Math.random() * 3000 + 1000); 
+        }
+    }
 }
