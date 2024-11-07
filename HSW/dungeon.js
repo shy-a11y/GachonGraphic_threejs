@@ -138,7 +138,6 @@ window.onload = function init() {
     createSky();
     createTree(15);
     createSnows();
-    createSlimes();
 
     // 충돌 감지 함수
     function detectCollision(position) {
@@ -307,51 +306,6 @@ window.onload = function init() {
                 snowflake.position.x = Math.random() * 800 - 200; 
                 snowflake.position.z = Math.random() * 400 - 100;
             }
-        }
-    }
-        
-
-    function createSlimes() {
-        for (let i = 0; i < 10; i++) {
-            const size = Math.random() * 6 + 1;
-            const mode = ['happy', 'sad', 'angry'][Math.floor(Math.random() * 3)]; 
-            const slime = createSlime(size, mode); 
-    
-            slime.position.set(Math.random() * 200 - 100, size / 2, Math.random() * 200 - 100);
-            scene.add(slime);
-            slimes.push(slime);
-    
-
-            setInterval(() => {
-                if (slime.userData.isMoving) {
-                    return; 
-                }
-    
-                slime.userData.isMoving = true; 
-    
-                const direction = new THREE.Vector3(Math.random() - 0.5, 0, Math.random() - 0.5).normalize();
-                const targetPosition = slime.position.clone().add(direction.multiplyScalar(slimeSpeed * 20)); 
-  
-                const startPosition = slime.position.clone();
-                const startTime = Date.now();
-    
-                const move = () => {
-                    const elapsedTime = Date.now() - startTime;
-                    const progress = Math.min(elapsedTime / slimeMovementTime, 1); 
-    
-                    slime.position.lerpVectors(startPosition, targetPosition, progress);
-
-                    slime.position.y = Math.sin(progress * Math.PI) * 2;
-    
-                    if (progress < 1) {
-                        requestAnimationFrame(move);
-                    } else {
-                        slime.userData.isMoving = false; 
-                    }
-                };
-    
-                requestAnimationFrame(move); 
-            }, Math.random() * 3000 + 1000); 
         }
     }
 }
